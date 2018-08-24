@@ -1,0 +1,21 @@
+Заказ № {{ order['id'] }}
+Комментарий: {{ order['comments']}}
+Тариф: {{order['tariff_name']}}
+{% if order['prolongation'] is not null %}
+    --------------------
+    Продление:
+    Количество докупаемых пользователей: {{ order['prolongation']['additional_users_count'] }}
+    Количество пользователей в аккаунте: {{order['prolongation']['current_users_count']}}
+    Количество оплаченных месяцев: {{order['prolongation']['months']}}
+    Цена: {{ order['prolongation']['price'] }}
+    Скидка на товар: {{order['prolongation']['discount_price']}}
+{% endif %}
+
+{% if order['add_users'] is not null %}
+    --------------------
+    Докупка:
+    Количество докупаемых пользователей: {{order['add_users']['additional_users_count']}}
+    Количество пользователей в аккаунте: {{order['add_users']['current_users_count']}}
+    Цена: {{order['add_users']['price']}}
+    Скидка на товар: {{order['add_users']['discount_price']}}
+{% endif %}

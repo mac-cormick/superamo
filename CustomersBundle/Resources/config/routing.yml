@@ -1,0 +1,59 @@
+customers.defaults:
+    path:     /
+    defaults: { _controller: CustomersBundle:Default:index }
+
+# Эти роуты оставлены для обратной совместимости
+customers.account_update.bc:
+    path: /controllers/AccountUpdateController.php
+    defaults: { _controller: customers.controller.account:accountUpdateAction, _format:json }
+    methods: [POST,GET]
+
+customers.account_payment.bc:
+    path: /controllers/AccountPaymentController.php
+    defaults: { _controller: customers.controller.account:accountPaymentAction, _format:json }
+    methods: [POST,GET]
+
+customers.account_user.bc:
+    path: /queue/add
+    defaults: { _controller: customers.controller.account_user:userChangeAction, _format:json }
+    methods: [POST,GET]
+
+customers.account_user.bc2:
+    path: /queue/add/
+    defaults: { _controller: customers.controller.account_user:userChangeAction, _format:json }
+    methods: [POST,GET]
+
+# Эти роуты будут основными
+customers.zendesk.bc:
+    path: /controllers/ZendeskController.php
+    defaults: { _controller: customers.controller.zendesk:statusAction, _format:json }
+    methods: [POST,GET]
+
+customers.zendesk:
+    path: /zendesk/status
+    defaults: { _controller: customers.controller.zendesk:statusAction, _format:json }
+    methods: [POST,GET]
+
+customers.account_update:
+    path: /customers/account_update
+    defaults: { _controller: customers.controller.account:accountUpdateAction, _format:json }
+    methods: [POST]
+
+customers.account_payment:
+    path: /customers/account_payment
+    defaults: { _controller: customers.controller.account:accountPaymentAction, _format:json }
+    methods: [POST]
+
+
+customers.account_user:
+    path: /customers/user/{action}
+    defaults: { _controller: customers.controller.account_user:userChangeAction, _format:json }
+    methods: [POST]
+    requirements:
+      action: "update|delete|add"
+
+customers.customer_add:
+    path: /webhooks/customer/add
+    defaults: { _controller: customers.controller.customer_hook:handleCustomerAddAction }
+    methods: [POST]
+

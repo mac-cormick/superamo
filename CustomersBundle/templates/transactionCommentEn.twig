@@ -1,0 +1,21 @@
+Order № {{ order['id'] }}
+Comment: {{ order['comments']}}
+Plan: {{order['tariff_name']}}
+{% if order['prolongation'] is not null %}
+--------------------
+    Subscription renewal:
+    Number of new users purchased: {{ order['prolongation']['additional_users_count'] }}
+    Number of existing users in account: {{order['prolongation']['current_users_count']}}
+    Number of months purchased: {{order['prolongation']['months']}}
+    Subtotal: {{ order['prolongation']['price'] }}
+    Discount: {{order['prolongation']['discount_price']}}
+{% endif %}
+
+{% if order['add_users'] is not null %}
+--------------------
+    User purchase:
+    Number of new users purchased: {{order['add_users']['additional_users_count']}}
+    Number of existing users in account: {{order['add_users']['current_users_count']}}
+    Subtotal: {{order['add_users']['price']}}
+    Discount: {{order['add_users']['discount_price']}}
+{% endif %}

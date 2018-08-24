@@ -1,0 +1,92 @@
+services:
+#    customers.example:
+#        class: CustomersBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]
+#
+#
+    monolog.group_procesor:
+        class: Amo\Monolog\GroupProcessor
+        tags:
+          - { name: monolog.processor }
+          - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+
+    monolog.web_procesor:
+        class: Symfony\Bridge\Monolog\Processor\WebProcessor
+        tags:
+          - { name: monolog.processor ,channel: request }
+          - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+
+    amocrm.customers_api:
+        class: Phase\AmoCRM_API
+        factory: "amocrm.api_factory:createCustomersClient"
+        arguments:
+            - "@curl"
+            - "@logger"
+        tags:
+            - { name: monolog.logger, channel: api }
+
+    amocrm.customersus_api:
+        class: Phase\AmoCRM_API
+        factory: "amocrm.api_factory:createCustomersusClient"
+        arguments:
+            - "@curl"
+            - "@logger"
+        tags:
+            - { name: monolog.logger, channel: api }
+
+    customers.controller.account:
+        class: CustomersBundle\Controller\AccountController
+        arguments: ["@logger"]
+        calls:
+          - ['setContainer',['@service_container']]
+
+    customers.controller.account_user:
+        class: CustomersBundle\Controller\AccountUserController
+        arguments: ["@logger"]
+        calls:
+          - ['setContainer',['@service_container']]
+        tags:
+            - { name: monolog.logger, channel: customers_account_user }
+
+    customers.controller.zendesk:
+        class: CustomersBundle\Controller\ZendeskController
+        arguments: ["@logger","@amocrm.customers_api","%customers.custom_fields_map%"]
+        calls:
+          - ['setContainer',['@service_container']]
+        tags:
+            - { name: monolog.logger, channel: zendesk }
+
+    customers.controller.customer_hook:
+        class: CustomersBundle\Controller\CustomerHookController
+        arguments: ["@logger"]
+        calls:
+          - ['setContainer',['@service_container']]
+
+    customers.customer_update_tool:
+        class: CustomersBundle\Tool\CustomerUpdateTool
+        arguments: 
+           - "@logger"
+           - "@amocrm.customers_api"
+           - "@amocrm.support_api"
+           - "%customers.custom_fields_map%"
+           - "%amo_shard_type_ru%"
+
+    customersus.customer_update_tool:
+        class: CustomersBundle\Tool\CustomerUpdateTool
+        arguments:
+           - "@logger"
+           - "@amocrm.customersus_api"
+           - "@amocrm.support_api"
+           - "%customersus.custom_fields_map%"
+           - "%amo_shard_type_com%"
+
+##
+## Фильтрация вывода ошибок на выводе
+##
+    exception_listener:
+        class: CustomersBundle\Listener\ExceptionListener
+        arguments:
+          - "%kernel.debug%"
+        tags:
+          - { name: kernel.event_listener, event: kernel.exception }
+
